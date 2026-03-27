@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agent Intelligence Dashboard 2025</title>
+    <title>Agent Intelligence Dashboard 2026</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
     <style>
@@ -11,126 +11,105 @@
             --glass-bg: rgba(255, 255, 255, 0.9);
             --primary-grad: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
             --secondary-grad: linear-gradient(135deg, #3b82f6 0%, #2dd4bf 100%);
-            --danger-grad: linear-gradient(135deg, #f43f5e 0%, #fb923c 100%);
             --dark-navy: #0f172a;
             --text-main: #1e293b;
         }
 
         body { 
-            font-family: 'Inter', 'Segoe UI', sans-serif; 
+            font-family: 'Inter', sans-serif; 
             background: #f1f5f9; 
-            background-image: radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%), 
-                              radial-gradient(at 100% 0%, rgba(168, 85, 247, 0.15) 0px, transparent 50%);
+            background-image: radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.1) 0px, transparent 50%);
             margin: 0; display: flex; height: 100vh; overflow: hidden; color: var(--text-main);
         }
 
-        /* Sidebar Modern */
         .sidebar {
             width: 280px; background: var(--dark-navy); color: white;
             display: flex; flex-direction: column; padding: 25px; box-shadow: 4px 0 20px rgba(0,0,0,0.1);
         }
 
-        .sidebar h2 { font-size: 20px; font-weight: 800; margin-bottom: 30px; letter-spacing: -0.5px; background: var(--secondary-grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-
-        .sidebar label { font-size: 11px; font-weight: 700; color: #94a3b8; margin-bottom: 8px; text-transform: uppercase; display: block; }
-
+        .sidebar h2 { font-size: 18px; font-weight: 800; margin-bottom: 30px; background: var(--secondary-grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .sidebar label { font-size: 10px; font-weight: 700; color: #94a3b8; margin-bottom: 5px; text-transform: uppercase; display: block; }
         .sidebar select, .sidebar input[type="file"] {
             width: 100%; background: #1e293b; color: white; border: 1px solid #334155;
-            padding: 10px; margin-bottom: 20px; border-radius: 8px; cursor: pointer;
+            padding: 10px; margin-bottom: 20px; border-radius: 8px;
         }
 
-        /* Data Manager List */
         .data-list { flex: 1; overflow-y: auto; margin-top: 10px; border-top: 1px solid #334155; padding-top: 15px; }
-        .data-item { 
-            display: flex; justify-content: space-between; align-items: center; 
-            background: #1e293b; padding: 8px 12px; border-radius: 6px; margin-bottom: 8px; font-size: 12px;
-        }
-        .btn-delete { 
-            background: none; border: none; color: #f43f5e; cursor: pointer; font-size: 16px; font-weight: bold;
-        }
-        .btn-delete:hover { color: #fb7185; }
+        .data-item { display: flex; justify-content: space-between; align-items: center; background: #1e293b; padding: 8px; border-radius: 6px; margin-bottom: 8px; font-size: 11px; }
+        .btn-delete { background: none; border: none; color: #f43f5e; cursor: pointer; font-size: 16px; }
 
-        /* Main Content */
         .main-content { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+        .top-nav { padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); }
 
-        .top-nav {
-            padding: 15px 30px; display: flex; justify-content: space-between; align-items: center;
-            background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); sticky: top; z-index: 100;
-        }
+        .card { background: var(--glass-bg); border: 1px solid rgba(255,255,255,0.4); padding: 18px; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .card h3 { margin: 0 0 15px 0; font-size: 13px; text-transform: uppercase; color: #64748b; letter-spacing: 0.5px; }
 
-        /* Glass Cards */
-        .card {
-            background: var(--glass-bg); border: 1px solid rgba(255,255,255,0.4);
-            padding: 20px; border-radius: 16px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);
-            transition: transform 0.2s;
-        }
-        .card:hover { transform: translateY(-2px); }
+        .dashboard-grid { padding: 20px 30px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; }
+        .kpi-card { text-align: center; border-left: 4px solid #6366f1; }
+        .kpi-card p { font-size: 24px; font-weight: 800; margin: 5px 0 0 0; color: var(--dark-navy); }
 
-        .dashboard-grid { padding: 25px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; }
-        .kpi-card { position: relative; overflow: hidden; }
-        .kpi-card::after { content: ""; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--primary-grad); }
-        .kpi-card p { font-size: 26px; font-weight: 800; margin: 5px 0 0 0; }
-        .kpi-card span { font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase; }
-
-        .chart-row { display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px; padding: 0 25px 25px 25px; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 0 25px 25px 25px; }
-
-        /* Table 2025 Style */
-        .table-row { padding: 0 25px 25px 25px; }
-        .table-container { border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; }
-        table { width: 100%; border-collapse: collapse; font-size: 13px; background: white; }
-        table th { background: #f8fafc; padding: 15px; text-align: left; font-weight: 700; color: #475569; }
-        table td { padding: 12px 15px; border-bottom: 1px solid #f1f5f9; }
-        .high-prod { color: #059669; background: #ecfdf5; padding: 4px 8px; border-radius: 6px; font-weight: 700; }
-        .low-prod { color: #dc2626; background: #fef2f2; padding: 4px 8px; border-radius: 6px; font-weight: 700; }
+        .chart-row { display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px; padding: 0 30px 20px 30px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 0 30px 20px 30px; }
+        
+        /* Table Style */
+        .table-row { padding: 0 30px 30px 30px; }
+        .table-container { border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; background: white; max-height: 400px; overflow-y: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        table th { background: #f8fafc; padding: 12px; text-align: left; position: sticky; top: 0; z-index: 10; border-bottom: 2px solid #e2e8f0; }
+        table td { padding: 10px 12px; border-bottom: 1px solid #f1f5f9; cursor: pointer; }
+        table tr:hover { background: #f1f5f9; }
+        .selected-row { background: #eef2ff !important; border-left: 4px solid #6366f1; }
+        .high-prod { color: #059669; font-weight: 700; background: #ecfdf5; padding: 2px 6px; border-radius: 4px; }
+        .low-prod { color: #dc2626; font-weight: 700; background: #fef2f2; padding: 2px 6px; border-radius: 4px; }
     </style>
 </head>
 <body>
 
     <div class="sidebar">
-        <h2>AGENT CORE AI</h2>
-        
+        <h2>CORE ANALYTICS</h2>
         <label>Active Periods</label>
-        <select id="periodSelector" onchange="switchPeriod()">
-            <option value="" disabled selected>Upload file first...</option>
-        </select>
-
-        <label>Quick Import</label>
+        <select id="periodSelector" onchange="switchPeriod()"><option value="" disabled selected>Loading GitHub...</option></select>
+        <label>Import New Data</label>
         <input type="file" id="upload" accept=".xlsx, .xls" />
-        
-        <label>Manage Uploaded Data</label>
-        <div class="data-list" id="dataList">
-            </div>
+        <label>Data List</label>
+        <div class="data-list" id="dataList"></div>
     </div>
 
     <div class="main-content">
         <div class="top-nav">
-            <h1 style="font-size: 22px; font-weight: 800; letter-spacing: -1px;">Operational Performance <span id="currentPeriodLabel" style="color: #6366f1;"></span></h1>
+            <h1 style="font-size: 20px; font-weight: 800;">Operational Performance <span id="currentPeriodLabel" style="color: #6366f1;"></span></h1>
             <div id="statusBadge" style="background: #dcfce7; color: #166534; padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 700;">LIVE SYSTEM</div>
         </div>
 
         <div class="dashboard-grid">
-            <div class="card kpi-card"><span>Total Calls</span><p id="totalCalls">0</p></div>
-            <div class="card kpi-card"><span>Success Call</span><p id="successCalls">0</p></div>
-            <div class="card kpi-card"><span>Conn. Rate</span><p id="connRate">0%</p></div>
-            <div class="card kpi-card"><span>Avg Prod</span><p id="avgProd">0</p></div>
-            <div class="card kpi-card"><span>Agents</span><p id="totalActiveSummary">0</p></div>
+            <div class="card kpi-card"><h3>Total Calls</h3><p id="totalCalls">0</p></div>
+            <div class="card kpi-card"><h3>Success</h3><p id="successCalls">0</p></div>
+            <div class="card kpi-card"><h3>Conn. Rate</h3><p id="connRate">0%</p></div>
+            <div class="card kpi-card"><h3>Avg Prod</h3><p id="avgProd">0</p></div>
+            <div class="card kpi-card"><h3>Agents</h3><p id="totalActiveSummary">0</p></div>
         </div>
 
         <div class="chart-row">
             <div class="card">
-                <h3 style="margin: 0 0 20px 0; font-size: 14px;">Activity Trend Pulse</h3>
+                <h3>Global Daily Trend</h3>
                 <div style="height: 250px;"><canvas id="trendChart"></canvas></div>
             </div>
             <div class="card">
-                <h3 style="margin: 0 0 20px 0; font-size: 14px;">Market Share (Prod)</h3>
+                <h3>Market Share (Prod)</h3>
                 <div style="height: 250px;"><canvas id="pieChart"></canvas></div>
+            </div>
+        </div>
+
+        <div class="table-row" id="agentTrendSection" style="display: none; margin-bottom: 20px;">
+            <div class="card" style="border-left: 4px solid #a855f7;">
+                <h3>Individual Pulse: <span id="selectedAgentName" style="color: #6366f1;"></span></h3>
+                <div style="height: 200px;"><canvas id="agentPulseChart"></canvas></div>
             </div>
         </div>
 
         <div class="grid-2">
             <div class="card">
-                <h3 style="color: #059669;">Top Performers</h3>
+                <h3 style="color: #059669;">Top 5 Performers</h3>
                 <div style="height: 200px;"><canvas id="topChart"></canvas></div>
             </div>
             <div class="card">
@@ -141,12 +120,10 @@
 
         <div class="table-row">
             <div class="card">
-                <h3>Detailed Analytics Breakdown</h3>
+                <h3>Detailed Analytics (Click name to see daily trend)</h3>
                 <div class="table-container">
                     <table>
-                        <thead>
-                            <tr><th>AGENT NAME</th><th>SUCCESS</th><th>UNSUCCESS</th><th>ACTIVE DAYS</th><th>PROD</th></tr>
-                        </thead>
+                        <thead><tr><th>AGENT NAME</th><th>SUCCESS</th><th>UNSUCCESS</th><th>ACTIVE DAYS</th><th>PROD</th></tr></thead>
                         <tbody id="agentTableBody"></tbody>
                     </table>
                 </div>
@@ -156,83 +133,73 @@
 
 <script>
 let storage = {};
-let trendChart, topChart, bottomChart, pieChart;
+let trendChart, topChart, bottomChart, pieChart, agentPulseChart;
+
+const GITHUB_USER = 'AlvyFahmy'; 
+const REPO_NAME = 'Agent_Retention'; 
+const BRANCH = 'main';
+const filesToLoad = ['Januari-2026.xlsx', 'Februari-2026.xlsx', 'Maret-2026.xlsx'];
+
+window.addEventListener('DOMContentLoaded', async () => {
+    const statusBadge = document.getElementById('statusBadge');
+    statusBadge.innerText = "SYNCING...";
+    
+    for (const fileName of filesToLoad) {
+        const url = `https://raw.githubusercontent.com/${GITHUB_USER}/${REPO_NAME}/${BRANCH}/${fileName}`;
+        try {
+            const response = await fetch(url);
+            if (!response.ok) continue;
+            const arrayBuffer = await response.arrayBuffer();
+            const data = new Uint8Array(arrayBuffer);
+            const wb = XLSX.read(data, { type: 'array' });
+            const periodName = fileName.replace('.xlsx', '');
+
+            storage[periodName] = {
+                agentData: XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]),
+                dailyTrend: XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[1]]),
+                summary: XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[2]])
+            };
+            updatePeriodDropdown(periodName);
+        } catch (e) { console.error(e); }
+    }
+
+    if (Object.keys(storage).length > 0) {
+        const lastPeriod = Object.keys(storage).pop();
+        displayData(lastPeriod);
+        statusBadge.innerText = "GITHUB CONNECTED";
+        updateDataList();
+    }
+});
 
 document.getElementById('upload').addEventListener('change', function(e) {
     const file = e.target.files[0];
     if (!file) return;
-
     const reader = new FileReader();
     reader.onload = function(e) {
         const data = new Uint8Array(e.target.result);
         const wb = XLSX.read(data, { type: 'array' });
         const periodName = file.name.replace(/\.[^/.]+$/, "");
-
         storage[periodName] = {
             agentData: XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]),
             dailyTrend: XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[1]]),
             summary: XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[2]])
         };
-
-        refreshUI(periodName);
+        updatePeriodDropdown(periodName);
+        updateDataList();
+        displayData(periodName);
     };
     reader.readAsArrayBuffer(file);
-    this.value = '';
 });
-
-function refreshUI(lastPeriod) {
-    updatePeriodDropdown(lastPeriod);
-    updateDataList();
-    if(lastPeriod) displayData(lastPeriod);
-}
-
-function updateDataList() {
-    const list = document.getElementById('dataList');
-    list.innerHTML = '';
-    Object.keys(storage).forEach(key => {
-        list.innerHTML += `<div class="data-item">
-            <span>${key}</span>
-            <button class="btn-delete" onclick="deleteData('${key}')">×</button>
-        </div>`;
-    });
-}
-
-function deleteData(key) {
-    if(confirm('Hapus data ' + key + '?')) {
-        delete storage[key];
-        const select = document.getElementById('periodSelector');
-        for (let i=0; i<select.options.length; i++) {
-            if (select.options[i].value === key) select.remove(i);
-        }
-        
-        const remainingKeys = Object.keys(storage);
-        if(remainingKeys.length > 0) refreshUI(remainingKeys[remainingKeys.length-1]);
-        else location.reload(); // Refresh total jika habis
-    }
-}
-
-function updatePeriodDropdown(selected) {
-    const select = document.getElementById('periodSelector');
-    if (select.options[0]?.disabled) select.remove(0);
-    
-    if (![...select.options].some(o => o.value === selected)) {
-        select.add(new Option(selected, selected));
-    }
-    select.value = selected;
-}
-
-function switchPeriod() {
-    const period = document.getElementById('periodSelector').value;
-    if (period) displayData(period);
-}
 
 function displayData(period) {
     document.getElementById('currentPeriodLabel').innerText = "— " + period;
     const data = storage[period];
-    updateDashboard(data.agentData, data.dailyTrend, data.summary);
+    updateDashboard(data.agentData, data.dailyTrend);
+    // Hide agent trend when switching period
+    document.getElementById('agentTrendSection').style.display = 'none';
 }
 
-function updateDashboard(agents, dailyTrend, summary) {
+function updateDashboard(agents, dailyTrend) {
     const filtered = agents.filter(r => r['CREATOR'] && String(r['CREATOR']).trim() !== 'Grand Total');
     const grandTotalRow = agents.find(r => String(r['CREATOR']).trim() === 'Grand Total');
 
@@ -253,19 +220,58 @@ function updateDashboard(agents, dailyTrend, summary) {
     tableBody.innerHTML = '';
     filtered.forEach(r => {
         const prod = Number(r['Prod']) || 0;
-        tableBody.innerHTML += `<tr>
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
             <td><b>${r['CREATOR']}</b></td>
             <td>${r['Success Call'] || 0}</td><td>${r['Unsuccess Call'] || 0}</td>
             <td>${r['Total Active'] || 0}</td>
             <td><span class="${prod >= 3 ? 'high-prod' : prod <= 1.5 ? 'low-prod' : ''}">${prod.toFixed(2)}</span></td>
-        </tr>`;
+        `;
+        tr.onclick = () => {
+            document.querySelectorAll('tr').forEach(row => row.classList.remove('selected-row'));
+            tr.classList.add('selected-row');
+            showAgentTrend(r['CREATOR'], dailyTrend);
+        };
+        tableBody.appendChild(tr);
     });
 
     renderCharts(filtered, dailyTrend);
 }
 
+function showAgentTrend(agentName, dailyTrend) {
+    const agentData = dailyTrend.find(r => r['CREATOR'] === agentName);
+    if (!agentData) return;
+
+    document.getElementById('agentTrendSection').style.display = 'block';
+    document.getElementById('selectedAgentName').innerText = agentName;
+
+    const labels = Object.keys(agentData).filter(k => k !== 'CREATOR' && k !== 'Grand Total');
+    const values = labels.map(l => agentData[l] || 0);
+
+    if (agentPulseChart) agentPulseChart.destroy();
+    agentPulseChart = new Chart(document.getElementById('agentPulseChart'), {
+        type: 'bar',
+        data: {
+            labels,
+            datasets: [{
+                label: 'Calls',
+                data: values,
+                backgroundColor: '#6366f1',
+                borderRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: { y: { beginAtZero: true } }
+        }
+    });
+    
+    // Auto scroll to trend
+    document.getElementById('agentTrendSection').scrollIntoView({ behavior: 'smooth' });
+}
+
 function renderCharts(agents, dailyTrend) {
-    // Trend Chart Pulse
     const trendGT = dailyTrend.find(r => r['CREATOR'] === 'Grand Total');
     if (trendGT) {
         const labels = Object.keys(trendGT).filter(k => k !== 'CREATOR' && k !== 'Grand Total');
@@ -273,39 +279,64 @@ function renderCharts(agents, dailyTrend) {
         if (trendChart) trendChart.destroy();
         trendChart = new Chart(document.getElementById('trendChart'), {
             type: 'line',
-            data: { labels, datasets: [{ label: 'Pulse', data: values, borderColor: '#6366f1', backgroundColor: 'rgba(99, 102, 241, 0.1)', fill: true, tension: 0.4, borderWidth: 3, pointRadius: 4 }] },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            data: { labels, datasets: [{ label: 'Total Calls', data: values, borderColor: '#6366f1', backgroundColor: 'rgba(99, 102, 241, 0.1)', fill: true, tension: 0.4 }] },
+            options: { responsive: true, maintainAspectRatio: false }
         });
     }
 
-    // Top/Bottom Charts
     const top5 = [...agents].sort((a,b) => (b['Prod']||0)-(a['Prod']||0)).slice(0, 5);
     const bot5 = [...agents].sort((a,b) => (a['Prod']||0)-(b['Prod']||0)).slice(0, 5);
 
     if (topChart) topChart.destroy();
     topChart = new Chart(document.getElementById('topChart'), {
         type: 'bar',
-        data: { labels: top5.map(d=>d['CREATOR']), datasets: [{ data: top5.map(d=>d['Prod']), backgroundColor: '#107c10', borderRadius: 5 }] },
-        options: { indexAxis: 'y', maintainAspectRatio: false, plugins: { legend: { display: false } } }
+        data: { labels: top5.map(d=>d['CREATOR']), datasets: [{ data: top5.map(d=>d['Prod']), backgroundColor: '#107c10' }] },
+        options: { indexAxis: 'y', maintainAspectRatio: false }
     });
 
     if (bottomChart) bottomChart.destroy();
     bottomChart = new Chart(document.getElementById('bottomChart'), {
         type: 'bar',
-        data: { labels: bot5.map(d=>d['CREATOR']), datasets: [{ data: bot5.map(d=>d['Prod']), backgroundColor: '#dc2626', borderRadius: 5 }] },
-        options: { indexAxis: 'y', maintainAspectRatio: false, plugins: { legend: { display: false } } }
+        data: { labels: bot5.map(d=>d['CREATOR']), datasets: [{ data: bot5.map(d=>d['Prod']), backgroundColor: '#dc2626' }] },
+        options: { indexAxis: 'y', maintainAspectRatio: false }
     });
 
-    // Doughnut
     const high = agents.filter(a => a['Prod'] >= 3).length;
     const mid = agents.filter(a => a['Prod'] < 3 && a['Prod'] > 1.5).length;
     const low = agents.filter(a => a['Prod'] <= 1.5).length;
     if (pieChart) pieChart.destroy();
     pieChart = new Chart(document.getElementById('pieChart'), {
         type: 'doughnut',
-        data: { labels: ['High', 'Mid', 'Low'], datasets: [{ data: [high, mid, low], backgroundColor: ['#107c10', '#fbbf24', '#dc2626'], borderWeight: 0 }] },
-        options: { maintainAspectRatio: false, cutout: '70%' }
+        data: { labels: ['High', 'Mid', 'Low'], datasets: [{ data: [high, mid, low], backgroundColor: ['#107c10', '#fbbf24', '#dc2626'] }] },
+        options: { maintainAspectRatio: false }
     });
+}
+
+function updatePeriodDropdown(selected) {
+    const select = document.getElementById('periodSelector');
+    if (select.options[0]?.disabled) select.remove(0);
+    if (![...select.options].some(o => o.value === selected)) select.add(new Option(selected, selected));
+    select.value = selected;
+}
+
+function updateDataList() {
+    const list = document.getElementById('dataList');
+    list.innerHTML = '';
+    Object.keys(storage).forEach(key => {
+        list.innerHTML += `<div class="data-item"><span>${key}</span><button class="btn-delete" onclick="deleteData('${key}')">×</button></div>`;
+    });
+}
+
+function deleteData(key) {
+    if(confirm('Hapus data ' + key + '?')) {
+        delete storage[key];
+        location.reload();
+    }
+}
+
+function switchPeriod() {
+    const period = document.getElementById('periodSelector').value;
+    if (period) displayData(period);
 }
 </script>
 </body>
