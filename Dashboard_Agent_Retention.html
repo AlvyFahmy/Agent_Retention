@@ -155,7 +155,67 @@
     </div>
 
 <script>
+// --- BAGIAN ATAS SCRIPT ---
 let storage = {};
+let trendChart, agentPulseChart;
+
+// 1. KONFIGURASI GITHUB (SESUAIKAN INI)
+const GITHUB_USER = 'AlvyFahmy'; 
+const REPO_NAME = 'Agent_Retention'; // Ganti dengan nama repo di gambar
+const BRANCH = 'main';
+
+// Daftar file yang ada di repositori kamu
+const filesToLoad = [
+    'Januari-2026.xlsx',
+    'Februari-2026.xlsx',
+    'Maret-2026.xlsx'
+];
+
+// 2. FUNGSI AUTO-LOAD SAAT HALAMAN DIBUKA
+window.addEventListener('DOMContentLoaded', async () => {
+    const statusBadge = document.getElementById('statusBadge');
+    if(statusBadge) {
+        statusBadge.innerText = "SYNCING WITH GITHUB...";
+        statusBadge.style.background = "#fef9c3"; 
+    }
+
+    for (const fileName of filesToLoad) {
+        const url = `https://raw.githubusercontent.com/${GITHUB_USER}/${REPO_NAME}/${BRANCH}/${fileName}`;
+        
+        try {
+            const response = await fetch(url);
+            if (!response.ok) continue;
+            
+            const arrayBuffer = await response.arrayBuffer();
+            const data = new Uint8Array(arrayBuffer);
+            const wb = XLSX.read(data, { type: 'array' });
+            
+            const periodName = fileName.replace('.xlsx', '');
+
+            // Simpan ke storage dashboard
+            storage[periodName] = {
+                agentData: XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]),
+                dailyTrend: XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[1]]),
+                summary: XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[2]])
+            };
+            
+            updatePeriodDropdown(periodName);
+        } catch (error) {
+            console.error("Gagal load " + fileName, error);
+        }
+    }
+
+    // Tampilkan data Maret (terbaru) secara otomatis
+    if (storage['Maret-2026']) {
+        displayData('Maret-2026');
+        if(statusBadge) {
+            statusBadge.innerText = "GITHUB CONNECTED";
+            statusBadge.style.background = "#dcfce7";
+        }
+    }
+});
+
+// --- LANJUTKAN DENGAN FUNGSI DASHBOARD SEBELUMNYA (updateDashboard, renderCharts, dll) ---
 let trendChart, topChart, bottomChart, pieChart;
 
 document.getElementById('upload').addEventListener('change', function(e) {
