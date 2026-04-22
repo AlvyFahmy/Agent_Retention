@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-	<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6474607591538288"
-     crossorigin="anonymous"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agent Intelligence Dashboard 2026 Pro</title>
@@ -87,15 +85,24 @@
 
     <div id="capture-area" class="main-content">
         <div class="top-nav">
-            <h1 style="font-size: 20px; font-weight: 800;">Operational Performance <span id="currentPeriodLabel" style="color: #6366f1;"></span></h1>
-			<ins class="adsbygoogle"
+    <div>
+        <h1 style="font-size: 20px; font-weight: 800;">Operational Performance <span id="currentPeriodLabel" style="color: #6366f1;"></span></h1>
+		
+        <small id="userWelcome" style="color: #64748b; font-weight: 600;"></small>
+		<ins class="adsbygoogle"
          style="display:inline-block;width:300px;height:50px"
          data-ad-client="ca-pub-6474607591538288"
          data-ad-slot="XXXXXXXXXX"></ins>
     <script> (adsbygoogle = window.adsbygoogle || []).push({}); </script>
-            <button class="btn-export" onclick="exportPDF()">DOWNLOAD PDF</button>
-        </div>
-
+    </div>
+    <div style="display: flex; gap: 10px;">
+        <button class="btn-export" onclick="exportPDF()">DOWNLOAD PDF</button>
+        <button class="btn-export" style="background: #ef4444;" onclick="logout()">LOGOUT</button>
+    </div>
+</div>
+		
+			
+         
         <div id="underperformerAlert" class="alert-bar" style="display:none;">
             <svg width="20" height="20" fill="#be123c" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zM9 9V5a1 1 0 112 0v4a1 1 0 11-2 0zm0 4a1 1 0 112 0 1 1 0 01-2 0z"/></svg>
             <span>Needs Coaching (Prod < 1.5): <span id="alertList" style="font-weight:400;"></span></span>
@@ -152,6 +159,18 @@
     </div>
 
 <script>
+	// --- VALIDASI LOGIN ---
+// Cek apakah user sudah login. Jika tidak, lempar kembali ke halaman utama.
+if (sessionStorage.getItem('isLoggedIn') !== 'true') {
+    window.location.href = "https://alvyfahmy.github.io/";
+}
+
+function logout() {
+    sessionStorage.removeItem('isLoggedIn');
+    sessionStorage.removeItem('userName');
+    window.location.href = "https://alvyfahmy.github.io/";
+}
+// ----------------------
 let storage = {};
 let order = [];
 let trendChart, topChart, bottomChart, pieChart, agentPulseChart;
