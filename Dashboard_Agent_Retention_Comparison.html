@@ -39,15 +39,26 @@
         .nav-link.active { background: rgba(99, 102, 241, 0.2); border-color: #6366f1; color: white; }
 
         .main-content { flex: 1; overflow-y: auto; display: flex; flex-direction: column; scroll-behavior: smooth; }
-        .top-nav { padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); }
+        .top-nav { padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 50; }
         
         .btn-export { background: var(--primary-grad); color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 12px; }
 
-        /* Table Specific Styles */
-        .table-wrapper { padding: 30px; flex: 1; display: flex; flex-direction: column; }
-        .card { background: var(--glass-bg); border: 1px solid rgba(255,255,255,0.4); padding: 20px; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); height: 100%; display: flex; flex-direction: column; }
+        /* New Styles for Team Section */
+        .content-padding { padding: 0 30px 30px 30px; }
         
-        .table-container { flex: 1; overflow: auto; border-radius: 8px; border: 1px solid #e2e8f0; position: relative; }
+        .team-section { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 20px; }
+        .card { background: var(--glass-bg); border: 1px solid rgba(255,255,255,0.4); padding: 20px; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); display: flex; flex-direction: column; }
+        
+        /* KPI Mini Cards */
+        .kpi-row { display: flex; gap: 15px; margin-bottom: 20px; }
+        .kpi-mini { flex: 1; background: white; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0; text-align: center; }
+        .kpi-mini h4 { margin: 0; font-size: 12px; color: #64748b; text-transform: uppercase; }
+        .kpi-mini p { margin: 5px 0 0; font-size: 24px; font-weight: 800; color: var(--dark-navy); }
+        .text-grad { background: var(--secondary-grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        /* Table Specific Styles */
+        .table-wrapper { flex: 1; display: flex; flex-direction: column; overflow: hidden; /* Removed padding to fit grid better */ }
+        .table-container { flex: 1; overflow: auto; border-radius: 8px; border: 1px solid #e2e8f0; position: relative; min-height: 300px; }
         table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 800px; }
         
         table th { 
@@ -104,11 +115,12 @@
 
     <div class="sidebar">
         <h2>RETENTION</h2>
+		<label style="margin-top: 20px;">Navigation</label>
         <nav>
-            <a href="https://alvyfahmy.github.io/Agent_Retention/Dashboard_Agent_Retention.html" class="nav-link">
+            <a href="https://alvyfahmy.github.io/Agent_Retention/Dashboard_Agent_Retention.html" class="nav-link" style="color: #fff>
                 ⬅ Back to Dashboard
             </a>
-            <a href="#" class="nav-link active">
+            <a href="#" class="nav-link active" style="color: #fff>
                 📊 Monthly Comparison
             </a>
         </nav>
@@ -122,7 +134,7 @@
         <div class="top-nav">
             <div>
                 <h1 style="font-size: 20px; font-weight: 800;">Productivity Timeline <span style="color: #6366f1;">Analysis</span></h1>
-                <small style="color: #64748b; font-weight: 600;">Cross-period performance tracking</small>
+                <small style="color: #64748b; font-weight: 600;">Team Trend & Individual Tracking</small>
             </div>
             <div style="display: flex; gap: 10px;">
                 <input type="text" id="searchInput" class="search-box" placeholder="Find agent..." onkeyup="filterTable()">
@@ -131,9 +143,43 @@
             </div>
         </div>
 
-        <div class="table-wrapper">
-            <div class="card">
-                <h3 style="margin-top:0;">Multi-Period Productivity Overview</h3>
+        <div class="content-padding">
+            <!-- 1. TEAM PERFORMANCE SECTION -->
+            <div class="kpi-row">
+                <div class="kpi-mini">
+                    <h4>Overall Team Avg</h4>
+                    <p id="overallTeamAvg" class="text-grad">0.00</p>
+                </div>
+                <div class="kpi-mini">
+                    <h4>Best Month Avg</h4>
+                    <p id="bestMonthAvg">0.00</p>
+                </div>
+                <div class="kpi-mini">
+                    <h4>Total Agents Tracked</h4>
+                    <p id="totalAgentsTracked">0</p>
+                </div>
+            </div>
+
+            <div class="team-section">
+                <div class="card">
+                    <h3 style="margin-top:0; color: var(--dark-navy);">Team Productivity Trend</h3>
+                    <div style="height: 250px; flex: 1;">
+                        <canvas id="teamTrendChart"></canvas>
+                    </div>
+                </div>
+                <div class="card" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: white;">
+                    <h3 style="margin-top:0; color: #fff;">Insight</h3>
+                    <p style="color: #94a3b8; font-size: 13px; line-height: 1.6;">
+                        Grafik di sebelah kiri menampilkan rata-rata produktivitas seluruh tim per bulan. 
+                        <br><br>
+                        Gunakan ini untuk melihat tren performa tim (apakah tim sedang meningkat atau menurun) sebelum masuk ke detail performa individu di tabel di bawah.
+                    </p>
+                </div>
+            </div>
+
+            <!-- 2. INDIVIDUAL TABLE SECTION -->
+            <div class="card table-wrapper">
+                <h3 style="margin-top:0; margin-bottom: 15px;">Multi-Period Productivity Overview</h3>
                 <div class="table-container">
                     <table id="comparisonTable">
                         <thead id="tableHead">
@@ -166,17 +212,17 @@
     }
     // -----------------
 
-    // Configuration (Same as Page 1)
+    // Configuration
     const GITHUB_USER = 'AlvyFahmy'; 
     const REPO_NAME = 'Agent_Retention'; 
     const BRANCH = 'main';
     const filesToLoad = ['Januari-2026.xlsx', 'Februari-2026.xlsx', 'Maret-2026.xlsx', 'April-2026.xlsx'];
 
-    let storage = {}; // Store all data here
+    let storage = {}; 
     let loadedFiles = 0;
+    let teamChartInstance = null;
 
     window.addEventListener('DOMContentLoaded', async () => {
-        // Try to load files
         const promises = filesToLoad.map(async (fileName) => {
             const url = `https://raw.githubusercontent.com/${GITHUB_USER}/${REPO_NAME}/${BRANCH}/${fileName}`;
             try {
@@ -185,7 +231,7 @@
                 const arrayBuffer = await response.arrayBuffer();
                 const data = new Uint8Array(arrayBuffer);
                 const wb = XLSX.read(data, { type: 'array' });
-                const periodName = fileName.replace('.xlsx', ''); // e.g., "Januari-2026"
+                const periodName = fileName.replace('.xlsx', ''); 
 
                 storage[periodName] = {
                     agentData: XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]),
@@ -197,8 +243,6 @@
         });
 
         await Promise.all(promises);
-
-        // Remove loading screen
         document.getElementById('loading').style.display = 'none';
 
         if (loadedFiles > 0) {
@@ -209,12 +253,53 @@
     });
 
     function processComparisonData() {
-        // 1. Get all unique periods and sort them based on filesToLoad order
+        // 1. Identify available periods
         const availablePeriods = filesToLoad
             .filter(f => storage[f.replace('.xlsx', '')])
             .map(f => f.replace('.xlsx', ''));
 
-        // 2. Collect all unique agents across ALL periods
+        // 2. CALCULATE TEAM STATISTICS (New Feature)
+        let teamMonthlyAvgs = [];
+        let totalAllProd = 0;
+        let countAllProd = 0;
+        let maxAvg = -1;
+        let bestMonth = "-";
+
+        availablePeriods.forEach(period => {
+            const agents = storage[period].agentData.filter(r => r['CREATOR'] && String(r['CREATOR']).trim() !== 'Grand Total');
+            let sum = 0;
+            let count = 0;
+            
+            agents.forEach(r => {
+                const prod = Number(r['Prod']) || 0;
+                if(prod > 0) { // Exclude zeros if any to keep average realistic
+                    sum += prod;
+                    count++;
+                    
+                    // For overall total
+                    totalAllProd += prod;
+                    countAllProd++;
+                }
+            });
+
+            const avg = count > 0 ? sum / count : 0;
+            teamMonthlyAvgs.push(avg);
+
+            if (avg > maxAvg) {
+                maxAvg = avg;
+                bestMonth = period;
+            }
+        });
+
+        // Update KPI Cards
+        const overallAvg = countAllProd > 0 ? (totalAllProd / countAllProd) : 0;
+        document.getElementById('overallTeamAvg').innerText = overallAvg.toFixed(2);
+        document.getElementById('bestMonthAvg').innerText = maxAvg.toFixed(2) + ` (${bestMonth})`;
+        
+        // Render Team Chart
+        renderTeamChart(availablePeriods, teamMonthlyAvgs);
+
+        // 3. PROCESS INDIVIDUAL DATA (Existing Logic)
         let allAgentsMap = new Map();
 
         availablePeriods.forEach(period => {
@@ -224,12 +309,13 @@
                 if (!allAgentsMap.has(name)) {
                     allAgentsMap.set(name, { name: name, prods: {} });
                 }
-                // Store Prod for this period (handle potential missing or 0)
                 allAgentsMap.get(name).prods[period] = Number(r['Prod']) || 0;
             });
         });
 
-        // 3. Update Header & Footer
+        document.getElementById('totalAgentsTracked').innerText = allAgentsMap.size;
+
+        // 4. Update Table Header & Footer
         const thead = document.getElementById('tableHead');
         let headerHTML = '<tr><th class="sticky-col" style="min-width:200px;">AGENT NAME</th>';
         
@@ -237,18 +323,15 @@
             headerHTML += `<th>${p}</th>`;
         });
         
-        headerHTML += '<th style="background:#f1f5f9; color:#0f172a;">AVG</th></tr>'; // Average Column
+        headerHTML += '<th style="background:#f1f5f9; color:#0f172a;">AVG</th></tr>'; 
         thead.innerHTML = headerHTML;
 
-        // Update Data Mining Date (based on the last loaded period)
         const lastPeriod = availablePeriods[availablePeriods.length - 1];
         document.getElementById('miningDate').innerText = `Data Mining as of: ${lastPeriod}`;
 
-        // 4. Render Rows
+        // 5. Render Table Rows
         const tbody = document.getElementById('tableBody');
         tbody.innerHTML = '';
-
-        // Sort agents by name alphabetically (or by avg prod if preferred)
         const sortedAgents = Array.from(allAgentsMap.values()).sort((a, b) => a.name.localeCompare(b.name));
 
         sortedAgents.forEach(agent => {
@@ -263,8 +346,7 @@
                 let cellDisplay = "-";
                 let cellClass = "no-data";
 
-                if (val !== undefined && val !== null) {
-                    // Logic for styling specific to Page 1
+                if (val !== undefined && val !== null && val > 0) {
                     if (val >= 3) cellClass = "high-prod";
                     else if (val <= 1.5) cellClass = "low-prod";
                     else cellClass = "mid-prod";
@@ -277,7 +359,6 @@
                 rowHTML += `<td><span class="${cellClass}">${cellDisplay}</span></td>`;
             });
 
-            // Calculate Average
             const avg = count > 0 ? (totalProd / count) : 0;
             let avgClass = "no-data";
             let avgDisplay = "-";
@@ -297,7 +378,64 @@
         document.getElementById('recordCount').innerText = `Showing ${sortedAgents.length} Agents across ${availablePeriods.length} Months`;
     }
 
-    // Simple Client-side Filter
+    function renderTeamChart(labels, data) {
+        const ctx = document.getElementById('teamTrendChart').getContext('2d');
+        
+        if (teamChartInstance) {
+            teamChartInstance.destroy();
+        }
+
+        // Create Gradient
+        let gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, 'rgba(99, 102, 241, 0.5)');
+        gradient.addColorStop(1, 'rgba(99, 102, 241, 0.0)');
+
+        teamChartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Team Avg Productivity',
+                    data: data,
+                    borderColor: '#6366f1',
+                    backgroundColor: gradient,
+                    borderWidth: 3,
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: '#6366f1',
+                    pointRadius: 5,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        callbacks: {
+                            label: function(context) {
+                                return `Avg Prod: ${context.parsed.y.toFixed(2)}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { borderDash: [5, 5], color: '#e2e8f0' },
+                        suggestedMax: 4 
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+    }
+
     function filterTable() {
         const input = document.getElementById("searchInput");
         const filter = input.value.toUpperCase();
@@ -305,7 +443,7 @@
         const tr = table.getElementsByTagName("tr");
 
         for (let i = 1; i < tr.length; i++) {
-            const td = tr[i].getElementsByTagName("td")[0]; // Get Name column
+            const td = tr[i].getElementsByTagName("td")[0]; 
             if (td) {
                 const txtValue = td.textContent || td.innerText;
                 if (txtValue.toUpperCase().indexOf(filter) > -1) {
