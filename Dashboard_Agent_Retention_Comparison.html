@@ -115,15 +115,14 @@
 
     <div class="sidebar">
         <h2>RETENTION</h2>
-		
-        
-            <a href="https://alvyfahmy.github.io/Agent_Retention/Dashboard_Agent_Retention.html" class="nav-link" style="color: #fff>
+        <nav>
+            <a href="https://alvyfahmy.github.io/Agent_Retention/Dashboard_Agent_Retention.html" class="nav-link">
                 ⬅ Back to Dashboard
             </a>
-            <a href="#" class="nav-link active" style="color: #fff>
+            <a href="#" class="nav-link active">
                 📊 Monthly Comparison
             </a>
-        
+        </nav>
         
         <div style="margin-top: auto; font-size: 10px; color: #475569; text-align: center;">
             Pro Version v2.1 • 2026
@@ -138,7 +137,7 @@
             </div>
             <div style="display: flex; gap: 10px;">
                 <input type="text" id="searchInput" class="search-box" placeholder="Find agent..." onkeyup="filterTable()">
-                
+                <button class="btn-export" onclick="window.print()">PRINT</button>
                 <button class="btn-export" style="background: #ef4444;" onclick="logout()">LOGOUT</button>
             </div>
         </div>
