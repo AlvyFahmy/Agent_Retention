@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Trend Analysis 2026</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+    <style>
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.9);
+            --primary-grad: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            --secondary-grad: linear-gradient(135deg, #3b82f6 0%, #2dd4bf 100%);
+            --dark-navy: #0f172a;
+            --text-main: #1e293b;
+        }
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: #f1f5f9; 
+            background-image: radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.1) 0px, transparent 50%);
+            margin: 0; display: flex; height: 100vh; overflow: hidden; color: var(--text-main);
+        }
+
+        .sidebar {
+            width: 260px; background: var(--dark-navy); color: white;
+            display: flex; flex-direction: column; padding: 25px; box-shadow: 4px 0 20px rgba(0,0,0,0.1);
+        }
+
+        .sidebar h2 { font-size: 18px; font-weight: 800; margin-bottom: 30px; background: var(--secondary-grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .sidebar p { font-size: 12px; color: #94a3b8; margin-bottom: 20px; line-height: 1.5; }
+
+        .nav-link {
+            display: block; padding: 12px; margin-bottom: 8px; border-radius: 8px;
+            color: #e2e8f0; text-decoration: none; font-size: 13px; font-weight: 600;
+            transition: all 0.2s; cursor: pointer; border: 1px solid transparent;
+        }
+        .nav-link:hover { background: rgba(255,255,255,0.1); }
+        .nav-link.active { background: rgba(99, 102, 241, 0.2); border-color: #6366f1; color: white; }
+
+        .main-content { flex: 1; overflow-y: auto; display: flex; flex-direction: column; scroll-behavior: smooth; }
+        .top-nav { padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); }
+        
+        .btn-export { background: var(--primary-grad); color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 12px; }
+
+        /* Table Specific Styles */
+        .table-wrapper { padding: 30px; flex: 1; display: flex; flex-direction: column; }
+        .card { background: var(--glass-bg); border: 1px solid rgba(255,255,255,0.4); padding: 20px; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); height: 100%; display: flex; flex-direction: column; }
+        
+        .table-container { flex: 1; overflow: auto; border-radius: 8px; border: 1px solid #e2e8f0; position: relative; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 800px; }
+        
+        table th { 
+            background: #f8fafc; padding: 15px; text-align: left; position: sticky; top: 0; z-index: 10; 
+            font-weight: 700; color: #475569; border-bottom: 2px solid #cbd5e1; white-space: nowrap;
+        }
+        
+        table td { 
+            padding: 12px 15px; border-bottom: 1px solid #f1f5f9; vertical-align: middle;
+        }
+
+        tr:hover { background-color: #f8fafc; }
+
+        .sticky-col { position: sticky; left: 0; background: #fff; z-index: 5; border-right: 2px solid #e2e8f0; }
+        tr:hover .sticky-col { background: #f8fafc; }
+
+        /* Badge Styles */
+        .high-prod { color: #059669; font-weight: 700; background: #ecfdf5; padding: 4px 8px; border-radius: 6px; font-size: 12px; }
+        .low-prod { color: #dc2626; font-weight: 700; background: #fef2f2; padding: 4px 8px; border-radius: 6px; font-size: 12px; }
+        .mid-prod { color: #d97706; font-weight: 600; background: #fffbeb; padding: 4px 8px; border-radius: 6px; font-size: 12px; }
+        .no-data { color: #94a3b8; font-style: italic; }
+
+        .footer-note {
+            margin-top: 20px; padding-top: 20px; border-top: 1px dashed #cbd5e1;
+            display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #64748b;
+        }
+
+        /* Loading Spinner */
+        #loading {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.9); z-index: 9999;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+        }
+        .spinner {
+            width: 40px; height: 40px; border: 4px solid #e2e8f0; border-top: 4px solid #6366f1; border-radius: 50%;
+            animation: spin 1s linear infinite; margin-bottom: 15px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .search-box {
+            padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px;
+            font-family: inherit; width: 250px; outline: none; transition: border-color 0.2s;
+        }
+        .search-box:focus { border-color: #6366f1; }
+    </style>
+</head>
+<body>
+
+    <!-- Loading Screen -->
+    <div id="loading">
+        <div class="spinner"></div>
+        <div style="font-weight: 600; color: #64748b;">Mining Data 2026...</div>
+    </div>
+
+    <div class="sidebar">
+        <h2>RETENTION</h2>
+        <nav>
+            <a href="index.html" class="nav-link">
+                ⬅ Back to Dashboard
+            </a>
+            <a href="#" class="nav-link active">
+                📊 Monthly Comparison
+            </a>
+        </nav>
+        
+        <div style="margin-top: auto; font-size: 10px; color: #475569; text-align: center;">
+            Pro Version v2.1 • 2026
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="top-nav">
+            <div>
+                <h1 style="font-size: 20px; font-weight: 800;">Productivity Timeline <span style="color: #6366f1;">Analysis</span></h1>
+                <small style="color: #64748b; font-weight: 600;">Cross-period performance tracking</small>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <input type="text" id="searchInput" class="search-box" placeholder="Find agent..." onkeyup="filterTable()">
+                <button class="btn-export" onclick="window.print()">PRINT</button>
+                <button class="btn-export" style="background: #ef4444;" onclick="logout()">LOGOUT</button>
+            </div>
+        </div>
+
+        <div class="table-wrapper">
+            <div class="card">
+                <h3 style="margin-top:0;">Multi-Period Productivity Overview</h3>
+                <div class="table-container">
+                    <table id="comparisonTable">
+                        <thead id="tableHead">
+                            <!-- Headers generated by JS -->
+                        </thead>
+                        <tbody id="tableBody">
+                            <!-- Rows generated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="footer-note">
+                    <span id="recordCount">Loading records...</span>
+                    <span id="miningDate">Data Mining as of: -</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+    // --- AUTH CHECK ---
+    if (sessionStorage.getItem('isLoggedIn') !== 'true') {
+        window.location.href = "https://alvyfahmy.github.io/";
+    }
+
+    function logout() {
+        sessionStorage.removeItem('isLoggedIn');
+        sessionStorage.removeItem('userName');
+        window.location.href = "https://alvyfahmy.github.io/";
+    }
+    // -----------------
+
+    // Configuration (Same as Page 1)
+    const GITHUB_USER = 'AlvyFahmy'; 
+    const REPO_NAME = 'Agent_Retention'; 
+    const BRANCH = 'main';
+    const filesToLoad = ['Januari-2026.xlsx', 'Februari-2026.xlsx', 'Maret-2026.xlsx', 'April-2026.xlsx'];
+
+    let storage = {}; // Store all data here
+    let loadedFiles = 0;
+
+    window.addEventListener('DOMContentLoaded', async () => {
+        // Try to load files
+        const promises = filesToLoad.map(async (fileName) => {
+            const url = `https://raw.githubusercontent.com/${GITHUB_USER}/${REPO_NAME}/${BRANCH}/${fileName}`;
+            try {
+                const response = await fetch(url);
+                if (!response.ok) return;
+                const arrayBuffer = await response.arrayBuffer();
+                const data = new Uint8Array(arrayBuffer);
+                const wb = XLSX.read(data, { type: 'array' });
+                const periodName = fileName.replace('.xlsx', ''); // e.g., "Januari-2026"
+
+                storage[periodName] = {
+                    agentData: XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]),
+                    dailyTrend: XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[1]]),
+                    summary: XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[2]])
+                };
+                loadedFiles++;
+            } catch (e) { console.error("Error loading " + fileName, e); }
+        });
+
+        await Promise.all(promises);
+
+        // Remove loading screen
+        document.getElementById('loading').style.display = 'none';
+
+        if (loadedFiles > 0) {
+            processComparisonData();
+        } else {
+            document.getElementById('recordCount').innerText = "No data available.";
+        }
+    });
+
+    function processComparisonData() {
+        // 1. Get all unique periods and sort them based on filesToLoad order
+        const availablePeriods = filesToLoad
+            .filter(f => storage[f.replace('.xlsx', '')])
+            .map(f => f.replace('.xlsx', ''));
+
+        // 2. Collect all unique agents across ALL periods
+        let allAgentsMap = new Map();
+
+        availablePeriods.forEach(period => {
+            const agents = storage[period].agentData.filter(r => r['CREATOR'] && String(r['CREATOR']).trim() !== 'Grand Total');
+            agents.forEach(r => {
+                const name = r['CREATOR'].trim();
+                if (!allAgentsMap.has(name)) {
+                    allAgentsMap.set(name, { name: name, prods: {} });
+                }
+                // Store Prod for this period (handle potential missing or 0)
+                allAgentsMap.get(name).prods[period] = Number(r['Prod']) || 0;
+            });
+        });
+
+        // 3. Update Header & Footer
+        const thead = document.getElementById('tableHead');
+        let headerHTML = '<tr><th class="sticky-col" style="min-width:200px;">AGENT NAME</th>';
+        
+        availablePeriods.forEach(p => {
+            headerHTML += `<th>${p}</th>`;
+        });
+        
+        headerHTML += '<th style="background:#f1f5f9; color:#0f172a;">AVG</th></tr>'; // Average Column
+        thead.innerHTML = headerHTML;
+
+        // Update Data Mining Date (based on the last loaded period)
+        const lastPeriod = availablePeriods[availablePeriods.length - 1];
+        document.getElementById('miningDate').innerText = `Data Mining as of: ${lastPeriod}`;
+
+        // 4. Render Rows
+        const tbody = document.getElementById('tableBody');
+        tbody.innerHTML = '';
+
+        // Sort agents by name alphabetically (or by avg prod if preferred)
+        const sortedAgents = Array.from(allAgentsMap.values()).sort((a, b) => a.name.localeCompare(b.name));
+
+        sortedAgents.forEach(agent => {
+            const tr = document.createElement('tr');
+            let rowHTML = `<td class="sticky-col"><b>${agent.name}</b></td>`;
+            
+            let totalProd = 0;
+            let count = 0;
+
+            availablePeriods.forEach(p => {
+                const val = agent.prods[p];
+                let cellDisplay = "-";
+                let cellClass = "no-data";
+
+                if (val !== undefined && val !== null) {
+                    // Logic for styling specific to Page 1
+                    if (val >= 3) cellClass = "high-prod";
+                    else if (val <= 1.5) cellClass = "low-prod";
+                    else cellClass = "mid-prod";
+                    
+                    cellDisplay = val.toFixed(2);
+                    totalProd += val;
+                    count++;
+                }
+
+                rowHTML += `<td><span class="${cellClass}">${cellDisplay}</span></td>`;
+            });
+
+            // Calculate Average
+            const avg = count > 0 ? (totalProd / count) : 0;
+            let avgClass = "no-data";
+            let avgDisplay = "-";
+            
+            if (count > 0) {
+                if (avg >= 3) avgClass = "high-prod";
+                else if (avg <= 1.5) avgClass = "low-prod";
+                else avgClass = "mid-prod";
+                avgDisplay = avg.toFixed(2);
+            }
+
+            rowHTML += `<td style="font-weight:bold;"><span class="${avgClass}">${avgDisplay}</span></td>`;
+            tr.innerHTML = rowHTML;
+            tbody.appendChild(tr);
+        });
+
+        document.getElementById('recordCount').innerText = `Showing ${sortedAgents.length} Agents across ${availablePeriods.length} Months`;
+    }
+
+    // Simple Client-side Filter
+    function filterTable() {
+        const input = document.getElementById("searchInput");
+        const filter = input.value.toUpperCase();
+        const table = document.getElementById("comparisonTable");
+        const tr = table.getElementsByTagName("tr");
+
+        for (let i = 1; i < tr.length; i++) {
+            const td = tr[i].getElementsByTagName("td")[0]; // Get Name column
+            if (td) {
+                const txtValue = td.textContent || td.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    }
+</script>
+</body>
+</html>
