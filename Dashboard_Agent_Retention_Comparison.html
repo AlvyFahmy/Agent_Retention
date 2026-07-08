@@ -199,14 +199,11 @@
     </div>
 
 <script>
-    // --- AUTH CHECK ---
-    if (sessionStorage.getItem('isLoggedIn') !== 'true') {
-        window.location.href = "https://alvyfahmy.github.io/";
-    }
+    // --- AUTH CHECK DIHAPUS ---
+    // Halaman kini bisa diakses langsung tanpa lemparan landing page.
 
     function logout() {
-        sessionStorage.removeItem('isLoggedIn');
-        sessionStorage.removeItem('userName');
+        // Fungsi logout diarahkan kembali ke landing page utama jika ditekan
         window.location.href = "https://alvyfahmy.github.io/";
     }
     // -----------------
