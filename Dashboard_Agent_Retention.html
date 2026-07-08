@@ -169,18 +169,15 @@
     </div>
 
 <script>
-	// --- VALIDASI LOGIN ---
-// Cek apakah user sudah login. Jika tidak, lempar kembali ke halaman utama.
-if (sessionStorage.getItem('isLoggedIn') !== 'true') {
-    window.location.href = "https://alvyfahmy.github.io/";
-}
+// --- VALIDASI LOGIN DIHAPUS ---
+// Sekarang dashboard bisa langsung diakses tanpa pengecekan sessionStorage.
 
 function logout() {
-    sessionStorage.removeItem('isLoggedIn');
-    sessionStorage.removeItem('userName');
+    // Fungsi log out diarahkan kembali ke landing page jika tombol ditekan
     window.location.href = "https://alvyfahmy.github.io/";
 }
 // ----------------------
+
 let storage = {};
 let order = [];
 let trendChart, topChart, bottomChart, pieChart, agentPulseChart;
